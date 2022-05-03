@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>Group1</title>
+<head> 
+<meta charset="ISO-8859-1">
+    <title> School District Selection </title>
+</head>
+<body style="background-color:#444444;" text="white" onload="hideLoading()">
+	<form>
+	
+        <label>Select a state:</label>
+          <select name="state" id="state" onchange="location = this.value;">
+         	<option value=""></option>
+          	<option value="Pennsylvania">Pennsylvania</option>
+            <option value="Ohio">Ohio</option>
+            <option value="New York">New York</option>
+            <option value="Virginia">Virginia</option>
+            <option value="West Virginia">West Virginia</option>
+          </select> 
+		  <p><i>*Only Pennsylvania dataset is complete.</i></p>
+    </form>
+ 	
+ 	
+  	<p id="showLoading" style="visibility:hidden; text-align: center; line-height:500px;">loading... </p>
+  	  
+ 	
+<script>
+	var state = document.getElementById('state');
+	var showLoading = document.getElementById('showLoading');
+	
+	
+	state.addEventListener('change', function()
+	  {
+		if(this.value.length < 1){
+	        document.querySelector("body").style.visibility = "visible";
+	        
+	        }
+	
+	    if(this.value.length > 1) {
+	        document.querySelector(
+	        "body").style.visibility = "hidden";
+	        
+	        showLoading.style.visibility = "visible";
+	    }
+	  });
+	  
+	  function hideLoading() {
+	  		showLoading.style.visibility = "hidden";
+	  		document.querySelector("body").style.visibility = "visible";
+	  }
+	  
+               
+</script>
+ 
+</body>
+</html>
+

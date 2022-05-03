@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>Group1</title>
+<head> 
+<meta charset="ISO-8859-1">
+    <title> School District Selection </title>
+</head>
+<body style="background-color:#444444;" text="white">
+	<form>
+ 		<input type="button" value="Go back!" onclick="history.back()">
+	</form>
+	
+	<form action="#" 
+		  th:action="@{/update/{schoolName}(schoolName=${school.schoolName})}" 
+		  th:object="${school}" 
+		  method="post">
+		  
+		<div style="display: flex; justify-content: flex-start;">
+			<p> School:&nbsp; </p>
+	    	<p th:object="${school.schoolName}" th:text="${school.schoolName}"></p>
+  		</div>
+  		
+		<label for="numStudents">Number of Students: 
+		<abbr title="This field is mandatory" aria-label="required"> * </abbr>
+		</label>
+	    <input type="number" th:field="*{numStudents}" id="numStudents" placeholder="1-100000" min="1" max="100000" required>
+	    <span th:if="${#fields.hasErrors('numStudents')}" th:errors="*{numStudents}"></span>
+	    
+	    <label for="numBuses">Available Buses: 
+	    <abbr title="This field is mandatory" aria-label="required"> * </abbr>
+	    </label>
+	    <input type="number" th:field="*{numBuses}" id="numBuses" placeholder="1-500" min="1" max="500" required>
+	    <span th:if="${#fields.hasErrors('numBuses')}" th:errors="*{numBuses}"></span>
+	    
+	    <label for="numBuses">Bus Capacity: 
+	    <abbr title="This field is mandatory" aria-label="required"> * </abbr>
+	    </label>
+	    <input type="number" th:field="*{busCapacity}" id="busCapacity" placeholder="1-100" min="1" max="100" required>
+	    <span th:if="${#fields.hasErrors('busCapacity')}" th:errors="*{busCapacity}"></span>
+	    
+	    <label for="travelTime">Max Travel Time (minutes): 
+	    <abbr title="This field is mandatory" aria-label="required"> * </abbr>
+	    </label>
+	    <input type="number" th:field="*{travelTime}" id="travelTime" placeholder="1-60" min="1" max="60" required>
+	    <span th:if="${#fields.hasErrors('travelTime')}" th:errors="*{travelTime}"></span>
+	    
+	    <label for="stuPercent">Percent of Students: 
+	    <abbr title="This field is mandatory" aria-label="required"> * </abbr>
+	    </label>
+	    <input type="number" th:field="*{stuPercent}" id="stuPercent" placeholder="1-100" min="1" max="100" required>
+	    <span th:if="${#fields.hasErrors('stuPercent')}" th:errors="*{stuPercent}"></span>
+	    
+	    <input type="submit" value="Update School">   
+  	</form>
+  	
+  	
+</body>
+</html>
+
+

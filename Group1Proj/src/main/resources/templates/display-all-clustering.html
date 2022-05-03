@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>Group1</title>
+<head> 
+<meta charset="ISO-8859-1">
+    <title> School District Selection </title>
+</head>
+<body style="background-color:#444444;" text="white" onload="hideLoading()">
+ <div style="float:left;width:50%;">
+	<form
+	  th:action="@{/county/state/{districtName}(districtName=${districtName})}" 
+	  method="post">
+ 		<input type="submit" name="Go back!" value="Cluster More Schools (Go Back)">
+	</form>
+	
+
+	  
+    	<div style="display: flex; justify-content: flex-start;">
+	    	<p> <b>State:&nbsp; </b></p>
+	    	<p style="color:#0AE840" th:object="${state}" th:text="${state}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>County:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:object="${county}" th:text="${county}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>District:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:text="${districtName}"></p>
+    	</div>
+  		<div th:each="allInfo : ${allInfoList}">
+	  		<div style="display: flex; justify-content: flex-start;">
+	  			<p>Clustered Schools: </p>
+	  			<p th:each="school : ${allInfo.getSchoolsInfo()}" th:text="${school.schoolName}" style="padding-left:20px; color:#F75412"> </p>
+	  			<p>&nbsp;&nbsp;&nbsp;&nbsp; Number of Clusters: &nbsp; </p>
+	  			<p style="color:#F75412" th:object="${allInfo.getClusterInfo().size()}" th:text="${allInfo.getClusterInfo().size()}"> </p>
+	  			<p>&nbsp;&nbsp;&nbsp; Total Addresses: &nbsp;</p>
+	  			<p style="color:#F75412" th:object="${allInfo.getTotalStuAddr()}" th:text="${allInfo.getTotalStuAddr()}"> </p>
+	  		</div>
+	  		<table style="border-bottom: 2px solid #8ebf42;">
+		  	
+		  		<tr th:each="cluster : ${allInfo.getAddrsPerCluster()}">
+		  			<td> Cluster #: &nbsp;</td>
+		  			<td style="color:#E8D709" th:text="${cluster.index}"> </td>
+		  			<td> &nbsp;&nbsp;&nbsp; Belongs to: &nbsp;</td>
+		  			<td th:text="${cluster.schoolName}"> </td>
+		  			<td>&nbsp;&nbsp;&nbsp; Total Addresses in cluster: &nbsp;</td>
+		  			<td style="color:#E8D709" th:text="${cluster.numAddr}"> </td>
+		  		</tr>
+		  		<tr >
+		  			<td><a style="color:#12A4F7;" th:href="@{/delete/cluster/{setIndex}(setIndex=${allInfo.getSetIndex()})}">Delete</a></td>
+		  		</tr>
+		  		<tr>
+		  			<td>
+		  				<form th:action="@{/route/clustering/{setIndex}(setIndex=${allInfo.getSetIndex()})}">
+ 							<input type="submit" id="Routing" name="Routing" value="Route" onclick=showEmailAlert()>
+						</form>
+                    </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td>
+ 						  <input type="text" id="textboxEmail" name="textboxEmail" value="" placeholder="Alternative e-mail">
+					</td>
+				</tr>
+                <tr>
+					<td>
+		  				<form th:action="@{/route/clustering/sendEmail}">
+ 							<input type="submit" id="email" th:name="${user.getEmail()}" value="Email Me File" onclick=showAlert()>
+						</form>
+                    </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td>
+ 						<form name="emailAlternativeForm" id="emailAlternativeForm"> </form>
+ 						<input type="submit" id="emailAlternative"  value="Email to Alternative" onclick=sendEmailToAlternative()>
+						<div th:value="${showEmail}" id="EmailDiv"> </div>
+		  			</td>
+		  		</tr>
+	  	  	</table>
+  		</div>
+  </div>
+  
+  <div th:value="${showRouting}" id="routingDisplay" style="float:left;width:50%;">
+  		<p>Display Routing Here </p>
+  
+  </div>
+  
+ <script>
+  	var hideDiv = document.getElementById('routingDisplay');
+  	if (hideDiv.getAttribute('value') == "0") {
+    	hideDiv.style.visibility = "hidden";
+	}
+	
+   	
+   	function showAlert(){
+   	 
+   	 const btn3 = document.getElementById('EmailDiv');
+   	 	if(btn3.getAttribute("value") == 0)
+    		{
+    			alert("Must Click on a ROUTE button before emailing!");
+   	 		}
+   	 	else {
+   	 		const emailName = document.getElementById('email');
+   	 		alert("Email has been sent to '" + emailName.name  +"'");
+   	 	}
+   	 		
+   	 }
+   	 
+   	 function sendEmailToAlternative(){
+   	 		var altEmail = document.getElementById('textboxEmail');	
+   	 		var form = document.getElementById('emailAlternativeForm');
+   	 		const btn3 = document.getElementById('EmailDiv');
+   	 		 
+   	 		if(btn3.getAttribute("value") == 0)
+    		{
+    			alert("Must Click on a ROUTE button before emailing!");
+   	 		}
+   	 		else{
+		        if ((altEmail.value).length === 0){return false;}
+		        else{	
+			        form.setAttribute('action', '/route/clustering/sendEmailFromTextBox/' + altEmail.value);
+			        alert("Email sent to '"+ altEmail.value+ "'");
+			        form.submit();
+		        }
+	        }
+   	 }
+   	 
+   	 
+   	 function hideLoading() {
+	  		showLoading.style.visibility = "hidden";
+	  		document.querySelector("body").style.visibility = "visible";
+	}
+   	 
+	
+  </script>
+  	  
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head> 
+<title>Group1</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <script src="js/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .leaflet-tooltip.my-labels {
+              background-color: lightgreen;
+              font-size: 9px;
+          }
+        
+    </style>
+    <title> School District Selection </title>
+   
+   <style>
+   		#map {height: 500px; width: 550px }
+   </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+</head>
+<body style="background-color:#444444;" text="white">
+   <div style="float:left;width:50%;">
+	<br>
+	<form
+	  th:action="@{/county/state/{districtName}(districtName=${districtName})}" 
+	  method="post">
+ 		<input type="submit" name="Go back!" value="Cluster More Schools (Go Back)">
+	</form>
+	
+	<form 
+	  th:object="${schoolsInfo}" 
+	  th:action="@{district/clustering}" 
+	  method="post">
+	  
+    	<div style="display: flex; justify-content: flex-start;">
+	    	<p> <b>State:&nbsp; </b></p>
+	    	<p style="color:#0AE840" th:object="${state}" th:text="${state}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>County:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:object="${county}" th:text="${county}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>District:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:text="${districtName}"></p>
+    	</div>
+  		
+  		<div style="display: flex; justify-content: flex-start;">
+  			<p>Clustered Schools: </p>
+  			<p th:each="school : ${schInfo}" th:text="${school.schoolName}" style="padding-left:10px; color:#F75412"> </p>
+  			<p>&nbsp;&nbsp;&nbsp;&nbsp; Number of Clusters: &nbsp; </p>
+  			<p style="color:#F75412" th:object="${numClusters}" th:text="${numClusters}"> </p>
+  			<p>&nbsp;&nbsp;&nbsp; Total Addresses: &nbsp;</p>
+  			<p style="color:#F75412" th:object="${numStu}" th:text="${numStu}"> </p>
+  		</div>
+  		<table>
+	  		<tr th:each="cluster : ${clusters}">
+	  			<td> Cluster #: &nbsp;</td>
+	  			<td style="color:#E8D709" th:text="${cluster.index}"> </td>
+	  			<td> &nbsp;&nbsp;&nbsp; Belongs to: &nbsp;</td>
+	  			<td th:text="${cluster.schoolName}"> </td>
+	  			<td>&nbsp;&nbsp;&nbsp; Total Addresses in cluster: &nbsp;</td>
+	  			<td style="color:#E8D709" th:text="${cluster.numAddr}"> </td>
+	  		</tr>
+  	  	</table>
+  	
+  	</form>
+  	<form
+	  th:action="@{/county/state/district/clustering}" 
+	  method="post">
+ 		<input type="submit" name="See Clusters!" value="See All Clusters">
+	</form>
+  </div>
+  
+  <div style="float:left;width:50%;">
+  	<br><br><br><br>
+  	
+  	<div id="map"></div>
+    
+    <div id='getGeoJson' th:value="${geoJson}"> </div>
+	
+	   <script>
+	   		var info = document.getElementById('getGeoJson');
+          	var infoGeo = info.getAttribute('value');
+	   		
+		    var displayGeo = JSON.parse(infoGeo);
+
+            
+			let map = L.map("map");
+			
+			
+			var multipolygon = L.geoJson(displayGeo);
+            map.fitBounds(multipolygon.getBounds());
+
+			L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CartoDB</a>',
+			    subdomains: "abcd",
+			    maxZoom: 19
+			}).addTo(map);
+	   		
+	   		 L.geoJson(displayGeo  ,{
+                pointToLayer: function(feature,latlng){
+                    if (feature.properties["name"] === "school") {
+                       return false;
+                    }
+                    var MyIcon = L.icon({
+                        iconUrl: 'https://www.pngmagic.com/product_images/'+feature.properties["color"]+'-solid-circle-png-image.png',
+                        iconSize:     [5, 5], // size of the icon
+                    });
+                
+                    return L.marker(latlng,{icon: MyIcon});
+                }
+            }).addTo(map);
+            
+            L.geoJson(displayGeo  ,{
+                pointToLayer: function(feature,latlng){
+                    if (feature.properties["name"] === "school") {
+                         
+                       return L.marker(latlng).bindTooltip(feature.properties["school"] , {permanent: true, direction: 'center',  className: "my-labels" });
+                      
+                    }
+                  return false;
+                }
+            }).addTo(map).showLabel();
+			
+			
+	 </script>
+	 
+  	</div>
+</body>
+</html>
+
+
+

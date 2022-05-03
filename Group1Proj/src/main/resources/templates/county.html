@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>Group1</title>
+<head> 
+<meta charset="ISO-8859-1">
+    <title> School District Selection </title>
+</head>
+<body style="background-color:#444444;" text="white" onload="hideLoading()">
+	<!--Taken from here https://www.computerhope.com/issues/ch000317.htm-->
+	<form
+	  th:action="@{/}" 
+	  method="post">
+ 		<input type="submit" name="Go back!" value="Go back!">
+	</form>
+	
+	<form th:object="${state}">
+		<div style="display: flex; justify-content: flex-start;">
+	        <p> <b>State:&nbsp; </b></p>
+		    	<p style="color:#0AE840" th:text="${state}"></p>
+		    	<p>&nbsp;&nbsp;&nbsp;</p>
+		    	
+			<p>  
+		        <label style="padding-left:10px;">Select a county:</label>
+		        
+		          <select name="county" id="county" onchange="location = this.value;">
+		          <option value=""></option>
+		          <option th:each="county : ${counties}" th:text="${county.county}" th:name="${county.county}" th:value="@{'county/'+${county.county}}"></option>
+		          </select>
+			</p>
+	    </div>
+        
+    </form>
+    <p id="showLoading" style="visibility:hidden; text-align: center; line-height:500px;">loading... </p>
+<script>
+	var county = document.getElementById('county');
+	var showLoading = document.getElementById('showLoading');
+	county.addEventListener('change', function()
+	  {
+		if(this.value.length < 1){
+	        document.querySelector("body").style.visibility = "visible";
+	        }
+	
+	    if(this.value.length > 1) {
+	        document.querySelector(
+	        "body").style.visibility = "hidden";
+	        
+	        showLoading.style.visibility = "visible";
+	    }
+	  });
+               
+      function hideLoading() {
+	  		showLoading.style.visibility = "hidden";
+	  }
+               
+</script>    
+     
+</body>
+</html>
+
+

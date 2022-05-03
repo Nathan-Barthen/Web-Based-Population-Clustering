@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>Group1</title>
+<head> 
+<meta charset="ISO-8859-1">
+    <title> School District Selection </title>
+   
+</head>
+<body style="background-color:#444444;" text="white" onload="hideLoading()">
+	<div id="alertError" th:value="${alertError}"></div>
+	<form
+	  th:action="@{/county/{county}(county=${county})}" 
+	  method="post">
+ 		<input type="submit" name="Go back!" value="Go back!" id="goBack">
+	</form>
+	
+	<form 
+	  th:object="${schoolsInfo}" 
+	  th:action="@{{districtName}/clustering(districtName=${districtName})}" 
+	  method="post">
+    	<div style="display: flex; justify-content: flex-start;">
+	    	<p> <b>State:&nbsp; </b></p>
+	    	<p style="color:#0AE840" th:object="${state}" th:text="${state}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>County:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:object="${county}" th:text="${county}"></p>
+	    	<p>&nbsp;&nbsp;&nbsp;</p>
+	    	
+	    	<p><b>District:&nbsp;</b></p>
+	    	<p style="color:#0AE840" th:text="${districtName}"></p>
+	    	<p>
+	    	<label style="padding-left:10px;"><b style='color:#1FECEC;'>&nbsp;&nbsp;&nbsp;&nbsp;Select cluster diameter:&nbsp;</b></label>
+          			<select name="diameter" id="diameter"  onchange="location = 'setDiameter/'+ this.value;">
+          				<option th:text="${currDiameter}"></option>
+            			<option value=".0036">.25 Mile</option>
+            			<option value=".0072">.5 Mile</option>
+            			<option value=".0109">75 Mile</option>
+            			<option value=".014">1 Mile</option>
+            			<option value=".022">1.5 Miles</option>
+            			<option value=".029">2 Miles</option>
+            			<option value=".036">2.5 Miles</option>
+            			<option value=".042">3 Miles</option>
+            			<option value=".051">3.5 Miles</option>
+            			<option value=".058">4 Miles</option>
+          			</select> 
+	    	<p>
+    	</div>
+  	
+  	  <table>
+  		<tr  th:each="school : ${schoolsInfo}">
+  			<td style="color:#F75412" th:text="${school.schoolName}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Addr:&nbsp;</td>
+  			<td th:text="${school.address}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Zip:&nbsp;</td>
+  			<td th:text="${school.zip}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Students:&nbsp;</td>
+  			<td style="color:#E8D709" th:text="${school.numStudents}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Low Grd:&nbsp;</td>
+  			<td th:text="${school.lowGrade}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; High Grd:&nbsp;</td>
+  			<td th:text="${school.highGrade}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Buses:&nbsp;</td>
+  			<td style="color:#E8D709" th:text="${school.numBuses}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Capacity:&nbsp;</td>
+  			<td style="color:#E8D709" th:text="${school.busCapacity}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; Max Travel Time (mins):&nbsp;</td>
+  			<td style="color:#E8D709" th:text="${school.travelTime}"></td>
+  			
+  			<td>&nbsp;&nbsp;&nbsp; % of Students:&nbsp;</td>
+  			<td style="color:#E8D709" th:text="${school.stuPercent}"></td>
+  			
+  			<td>%&nbsp;&nbsp;&nbsp;<a style="color:#12A4F7;" th:href="@{district/edit/{schoolName}(schoolName=${school.schoolName})}">Edit</a></td>
+  			<td>&nbsp;&nbsp;<a style="color:#12A4F7;" th:href="@{/delete/{schoolName}(schoolName=${school.schoolName})}">Delete</a></td>
+  			
+  			
+  			<td style="color:#0ED720;">
+  			  <label th:for="school.schoolName">
+  			  <input type="checkbox" th:id="${school.schoolName}" name="Cluster" th:value="${school.id}">
+  			  Cluster School?</label>
+  			</td>
+  			
+  		</tr>
+  	  </table>
+  	  
+  	  <a style="color:#12A4F7;" href="/addschoolsignup">Add School</a> <br>
+  	  
+  	</form>
+  		
+  		<br><button onclick="postForm()" id="clusterBtn">Cluster Schools</button>
+  		<form name="clusteringForm" id="clusteringForm" method="post">
+  	  		<input  type="hidden" id="clusterButton"/>
+  		</form>
+ <br><br>
+		<br><button type="button" onclick="seeClusters()" id="seeClusters" th:value="${showClusters}">See Clustered Schools</button>
+  			<form name="seeClustersForm" id="seeClustersForm" method="post">
+  	  			<input type="hidden" id="seeClusterButton" th:value="${showClusters}"/>
+  			</form> 	
+  		<p id="showLoading" style="visibility:hidden; text-align: center; line-height:100px;">loading... (this may take 20-30 seconds) </p>
+  	<script>
+  		var showLoading = document.getElementById('showLoading');
+  		function postForm() {
+   			var form = document.getElementById('clusteringForm');
+   			const btn = document.querySelector('#clusterButton');
+	            
+	        let checkboxes = document.querySelectorAll('input[name="Cluster"]:checked');
+	        let values = [];
+	        checkboxes.forEach((checkbox) => {
+	                values.push(checkbox.value);
+            });
+                	
+	        if (values.length === 0){return false;}	
+	        form.setAttribute('action', '/county/state/district/clustering/' + values);
+	        document.querySelector(
+	        "body").style.visibility = "hidden";
+	        showLoading.style.visibility = "visible";
+	        form.submit();
+       }
+		var goBack = document.getElementById('goBack');
+			goBack.addEventListener('click', function()
+			  {
+				if(this.value.length < 1){
+			        document.querySelector("body").style.visibility = "visible";
+			    }
+			
+			    if(this.value.length > 1) {
+			        document.querySelector(
+			        "body").style.visibility = "hidden";
+			        
+			        showLoading.style.visibility = "visible";
+			    }
+			  });
+	 const btn2 = document.querySelector('#seeClusters');
+    if(btn2.value == 0)
+    {
+    	btn2.setAttribute('disabled', 'disabled');
+    }		  
+	function seeClusters() {
+   			var form1 = document.getElementById('seeClustersForm');
+   			const btn1 = document.querySelector('#seeClusterButton');
+	        if (btn1.value == 0){return false;}	
+	        form1.setAttribute('action', '/county/state/district/clustering/');
+	        document.querySelector(
+	        "body").style.visibility = "hidden";
+	        showLoading.style.visibility = "visible";
+	        form1.submit();
+       }	     
+   
+   	var alertError = document.getElementById('alertError');
+   	if(alertError.getAttribute('value') == 1){
+   		alert('Error Generating Clusters: Insufficient Addresses');
+   	}
+   	if(alertError.getAttribute('value') == 2){
+   		alert('Error Generating Clusters: School(s) Address is incorrect');
+   	}
+   	if(alertError.getAttribute('value') == 3){
+   		alert('Error Generating Clusters: District polygon does not exist for district in US Census Bureau Database... no polygon to select addresses from');
+   	}
+   	
+   	function hideLoading() {
+	  		showLoading.style.visibility = "hidden";
+	}
+
+   
+   </script>
+  	
+  	
+</body>
+</html>
+
+
+

@@ -1,0 +1,32 @@
+
+Line 1:
+School district name
+Number of schools  (M number of schools)
+Number of students (N number of students)
+Maximum capacity of vehicle (default 50)
+Maximum trvel time of vehicle (default 50)
+
+Line 2 through N:
+Student id - (sequence of numbers starting from 1 to N)
+Name of road
+Latidude of student location
+Logitude of student location
+Number of students at location
+
+Line N+1 through M:
+School id (sequence starting with 1)
+Name of school
+Latidude of school location
+Logitude of school location
+
+Example:
+Slippery Rock School District 4 2050 50 50
+1 Main St 49 71 3
+.
+.
+.
+2050 Harmony Rd 49 72 2
+1 Slippery Rock Elementary 49 73
+2 Moraine Elementary 49 70
+3 Slippery Rock Middle School 49 71
+4 Slippery Rock High School 49 71
