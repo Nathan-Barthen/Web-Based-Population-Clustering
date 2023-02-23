@@ -37,8 +37,7 @@ public class SchoolsLongLat {
 			city = city.replace(" ", "+");
 			state = state.replace(" ", "+");
 			
-			String siteURL = "https://geocoding.geo.census.gov/geocoder/geographies/address?street=" + address+ "&city=" + city + "&state=" + state + "&zip=" + school.getZip() + "&benchmark=4&vintage=4";       
-			
+			String siteURL = "https://geocoding.geo.census.gov/geocoder/geographies/address?street=" + address + "&city=" + city + "&state=" + state + "&zip=" + school.getZip() + "&benchmark=4&vintage=4";    
 			//https://www.javatpoint.com/java-get-data-from-url
 			    try  
 			    {  
@@ -51,27 +50,31 @@ public class SchoolsLongLat {
 			      // Reads the webpage line by line
 			      while ((line = bufferedReader.readLine()) != null)
 			      {
-			    	  //If it finds the line with the informatrion about lon and lat
-			    	  if(line.contains("Interpolated Longitude (X)")) {
-			    		  String lon;
-			    		  String lat;
-			    		  //entireLine = entireLine.substring(entireLine.indexOf("Interpolated Longitude (X) Coordinates: </span>") + 1);
-			    		  lon = StringUtils.substringBetween(line, "Interpolated Longitude (X) Coordinates: </span>", "<br/><span");
-			    		  lat = StringUtils.substringBetween(line, "Interpolated Latitude (Y) Coordinates: </span>", "<br/><span");
-			    		  
-			    		  double schoolLon = Double.parseDouble(lon);
-			    		  double schoolLat = Double.parseDouble(lat);
-			    		  school.setSchoolLon(schoolLon);
-			    		  school.setSchoolLat(schoolLat);
-			    		  updatedSchools.add(school);
-			    		  
+			    	  //If the currently line contains the lon/lat corrdinates. Save line
+			    	  if (line.contains("Interpolated Longitude (X) Coordinates: ")) {
+							    String lonStr;
+							    String latStr;
+							    lonStr = StringUtils.substringBetween(line, "Interpolated Longitude (X) Coordinates: </span>", "<br>");
+							    latStr = StringUtils.substringBetween(bufferedReader.readLine(), "Interpolated Latitude (Y) Coordinates: </span>", "<br>");
+							    
+							    double lon = Double.parseDouble(lonStr);
+							    double lat = Double.parseDouble(latStr);
+							    
+							    System.out.println();
+							    school.setSchoolLon(lon);
+							    school.setSchoolLat(lat);
+							    updatedSchools.add(school);
+							
 			    	  }
+			    	  
+			    	  
+			    	  
 			      }
 			      bufferedReader.close();
 			    }  
 			    catch(Exception e)  
 			    {  
-			      System.out.println("Error");
+			      System.out.println("Error: + " + e);
 			      e.printStackTrace();  
 			    }  
 		
@@ -79,4 +82,3 @@ public class SchoolsLongLat {
 		return updatedSchools;
 	}
 	
-}
